@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+import "google/protobuf/any.proto";
+
+// 이 option들의 의미는 무엇인지?
+option java_multiple_files = true;
+//option java_package = "io.grpc.examples.helloworld";
+option java_outer_classname = "HelloWorldProto";
+//option objc_class_prefix = "HLW";
+
+package helloworld;
+
+service Greeter {
+  rpc SayHello (HelloRequest) returns (HelloReply) {}
+  rpc getUserInfo (UserInfoRequest) returns (UserInfo) {}
+}
+
+message HelloRequest {
+  string name = 1;
+}
+
+message HelloReply {
+  string message = 1;
+}
+
+message UserInfoRequest {
+  string id_here = 1;
+  int32 age_kr = 2;
+  repeated string something = 3;
+}
+
+message obj {
+  string name = 1;
+  string age = 2;
+}
+
+message UserInfo {
+  string id_here = 1;
+  string name = 2;
+  int32 age_kr= 3;
+  double points = 4;  // float은 사용불가, https://github.com/grpc/grpc/issues/2227
+  repeated string interests = 5;
+  repeated string something = 6;
+  map<string, obj> map_obj = 7;
+}
+
+service GoodBye {
+  rpc SayBye (ByeRequest) returns (ByeResponse) {}
+}
+
+message ByeRequest {
+  string name = 1;
+}
+
+message ByeResponse {
+  string message = 1;
+}

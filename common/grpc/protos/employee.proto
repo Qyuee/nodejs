@@ -1,0 +1,40 @@
+// document: https://adityasridhar.com/posts/how-to-effectively-use-grpc-streams-in-nodejs
+
+/**
+ Server Streaming
+ In this case, the client makes a single request to the server and the server sends a stream of messages back to the client.
+ 이 경우 클라이언트는 서버에 단일 요청을 하고 서버는 클라이언트에게 메시지 스트림을 다시 보냅니다.
+ */
+
+/**
+ Client Streaming
+
+ */
+
+syntax = "proto3";
+package employee;
+
+service Employee {
+  // server streaming
+  rpc paySalary (EmployeeRequest) returns (stream EmployeeResponse) {}
+
+  // client streaming
+  rpc generateReport (stream ReportEmployeeRequest) returns (ReportEmployeeResponse) {}
+}
+
+message EmployeeRequest {
+  repeated int32 employeeIdList = 1;
+}
+
+message EmployeeResponse{
+  string message = 1;
+}
+
+message ReportEmployeeRequest {
+  int32 id = 1;
+}
+
+message ReportEmployeeResponse{
+  string successfulReports = 1;
+  string failedReports = 2;
+}

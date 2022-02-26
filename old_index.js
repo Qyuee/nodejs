@@ -1,7 +1,7 @@
 const express = require('express');
 const logger = require('pino')();
 const { v4: uuidv4 } = require('uuid');
-const grpc_server = require('./common/grpc/grpc_server');
+const grpc_server = require('./old_src/common/grpc/grpc_server');
 
 const router = express.Router();
 const app = express();
@@ -16,9 +16,8 @@ app.use(express.urlencoded({ extended: true}));
 
 // response header에 응답시간이 추가됨
 app.use(responseTime());
+const common_logger = require('./old_src/common/common_logger');
 
-const common_logger = require('./common/common_logger');
-const {json} = require("express");
 // 모든 경로에 대해서 거쳐가는 경로
 app.use(common_logger);
 // req객체에 `requestTime`이라는 공통적인 값을 추가
@@ -48,11 +47,12 @@ app.get('/test', (req, res, next) => {
 });
 
 // '/auth'로 시작하는 경로를 분리
-app.use('/auth', require('./config/auth')(router));
-app.use('/api/v1', require('./config/api/v1/user')(router));
+app.use('/auth', require('./old_src/config/auth')(router));
+app.use('/api/v1', require('./old_src/config/api/v1/user')(router));
 
 app.listen(port, () => {
     console.log(`server is listening at localhost:${process.env.PORT}`);
 });
 
+// gRPC 서버 start
 grpc_server.start();

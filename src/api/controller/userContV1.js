@@ -1,4 +1,4 @@
-import {NotFound} from '../../error/apiError';
+import {NotFound} from '../../error';
 const testModel = require("../../models/testModel");
 
 const getUser = async (req, res) => {

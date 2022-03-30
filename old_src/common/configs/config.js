@@ -1,7 +1,7 @@
 'use strict'
 
 global.ROOT_PATH = require('app-root-path').path;
-global.COMMON_PATH = ROOT_PATH + '/common';
+global.COMMON_PATH = ROOT_PATH + '/old_src/common';
 
 const HELLO_PROTO_PATH = COMMON_PATH + '/grpc/protos/helloworld.proto';
 const EMPLOYEE_PROTO_PATH = COMMON_PATH + '/grpc/protos/employee.proto';

@@ -1,30 +1,47 @@
 import connection from '../loaders/mysql';
-import {CustomError} from "../error/customError";
+import {DbError} from '../error';
 
 // callback 안됨
 const test = async () => {
     await connection.query('select * from admin', (error, rows, fields) => {
         if (error) {
-            throw new CustomError('db error', 500, error.message);
+            throw new DbError('db error', 500, error.message);
         }
-
-        //console.log(rows);
         return rows;
     });
 };
 
-// promise를 사용하여 콜백
-const test2 = () => new Promise(async (resolve, reject) => {
-    await connection.query('select * from admin where admin_no = 10', (error, rows) => {
-        if (error) {
-            //reject(new CustomError('db error', 500, error.message));
-            reject(error);
-        }
-        resolve(rows);
+// promise + connection pool + 성공 케이스
+const successModel = () => new Promise((resolve, reject) => {
+    connection((conn) => {
+        conn.query('select * from admin', (err, rows) => {
+            if (err) {
+                //reject(err);
+                reject(new DbError("db error", 500, err.message));
+            }
+
+            resolve(rows);
+            conn.release();
+        });
+    });
+});
+
+// promise + connection pool + 실패 케이스
+const failedModel = () => new Promise((resolve, reject) => {
+    connection((conn) => {
+        conn.query('select * from admin2', (err, rows) => {
+            if (err) {
+                reject(new DbError("db error", 500, err.message));
+            }
+
+            resolve(rows);
+            conn.release();
+        });
     });
 });
 
 module.exports = {
     test,
-    test2
+    successModel,
+    failedModel
 }

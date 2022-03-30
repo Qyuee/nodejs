@@ -4,6 +4,7 @@
 import ApiError from "../error/apiError";
 
 const apiErrorHandler = (error, req, res, next) => {
+
     if (error instanceof ApiError.NotFound
     || error instanceof ApiError.BadRequest
     || error instanceof ApiError.Unauthorized) {
@@ -13,7 +14,7 @@ const apiErrorHandler = (error, req, res, next) => {
         });
 
     } else {
-        next();
+        next(error);
     }
 };
 

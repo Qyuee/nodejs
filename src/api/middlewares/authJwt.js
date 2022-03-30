@@ -1,7 +1,6 @@
 import {verify} from '../../utils/jwt';
 import Logger from '../../loaders/logger';
-import {CustomError} from "../../error/customError";
-import {TokenExpiredError} from 'jsonwebtoken';
+import {BadRequest} from "../../error";
 
 /**
  * client의 header에 포함된 jwt 토큰이 유효한지 확인
@@ -28,7 +27,7 @@ const authJwt = (req, res, next) => {
             return;
         }
     }
-    next(new CustomError('type', 400, '헤더에 authorization는 필수 값 입니다.'));
+    next(new BadRequest('헤더에 authorization는 필수 값 입니다.'));
 };
 
 module.exports = {

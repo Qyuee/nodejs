@@ -14,8 +14,5 @@ export default {
     login(user) {
         Logger.info(" >>> 로그인 처리 서비스 호출");
         return {user};
-    },
-    async test(user) {
-
     }
 }

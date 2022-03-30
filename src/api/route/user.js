@@ -1,18 +1,13 @@
 import { Router, Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 
+import {wrapAsync} from "../../utils/wrapAsync";
 import Logger from '../../loaders/logger';
 import middlewares from '../middlewares';
-import {user, userSave} from '../middlewares/validatorSchema/user';
 import joi from '../../utils/joiValidator';
+import userCont from '../controller/userContV1';
 import {sign, verify, refresh} from '../../utils/jwt';
-import userCont from '../controller/userCont';
-
-function wrapAsync(fn) {
-    return function (req, res, next) {
-        fn(req, res, next).catch(next);
-    };
-}
+import {user, userSave} from '../middlewares/validatorSchema/user';
 
 const route = Router();
 
@@ -82,7 +77,8 @@ export default (app = Router) => {
 
     /**
      * 로그인 처리
-     * access token, refresh token을 전달
+     * - access token, refresh token을 전달
+     * - 컨트롤러 없음
      */
     route.post('/login', async (req, res) => {
         const fixUser = {
@@ -123,6 +119,7 @@ export default (app = Router) => {
 
     /**
      * JWT 인증정보가 필요한 API
+     * - authJwt 미들웨어 추가
      */
     route.get('/need-jwt-auth', middlewares.authJwt, async (req, res) => {
         res.status(200).json({
@@ -133,6 +130,16 @@ export default (app = Router) => {
 
     /**
      * JWT 인증이 불필요한 API
+     * - 컨트롤러 분리
+     * - 비동기 에러 처리 대응
      */
-    route.get('/not-need-jwt-auth', wrapAsync(async (req, res) => userCont.getUser(req, res)));
+    // 성공 케이스
+    route.get('/success-case-v2', userCont.getUser);    // 비동기 에러는 catch 할 수 없음 -> uncaughtException 이벤트가 발생함
+    route.get('/success-case-v1', wrapAsync(async (req, res) => userCont.getUser(req, res)));   // 비동기 에러도 catch 할 수 있는 방식
+    route.get('/success-case-v3', require('../controller/userContV2')); // 이 또한, v2와 동일하다.
+    route.get('/success-case-v4', wrapAsync(require('../controller/userContV2')));  // 비동기 에러도 정상적으로 처리 가능
+
+    // 실패 케이스
+    route.get('/fail-case-v1', require('../controller/userContV3'));    // 비동기 에러 catch 불가 -> 프로세스 멈춤(단, uncaughtException가 있기에 예방은 가능)
+    route.get('/fail-case-v2', wrapAsync(require('../controller/userContV3'))); // 비동기 에러도 정상적으로 catch 가능
 }

@@ -27,6 +27,15 @@ app.use((req, res, next) => {
     next();
 });
 
+router.use((req, res, next) => {
+    const _end = res.end;
+    res.end = (arg1, arg2) => {
+        console.log(">>> end!!");
+        return _end.call(res, arg1, arg2);
+    };
+    next();
+})
+
 // 라우터 레벨 미들웨어
 router.get('/', (req, res, next) => {
     logger.info('라우터에 의해서 동작');
@@ -55,4 +64,4 @@ app.listen(port, () => {
 });
 
 // gRPC 서버 start
-grpc_server.start();
+//grpc_server.start();
